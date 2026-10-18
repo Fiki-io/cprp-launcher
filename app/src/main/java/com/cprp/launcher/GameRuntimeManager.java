@@ -7,7 +7,7 @@ import android.system.Os;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
-import org.tukaani.xz.XZCompressorInputStream;
+import org.tukaani.xz.XZInputStream;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -178,7 +178,7 @@ public class GameRuntimeManager {
 
         try (InputStream rawIn = context.getAssets().open(ASSET_IMAGEFS);
              BufferedInputStream bufIn = new BufferedInputStream(rawIn);
-             XZCompressorInputStream xzIn = new XZCompressorInputStream(bufIn);
+             XZInputStream xzIn = new XZInputStream(bufIn);
              TarArchiveInputStream tarIn = new TarArchiveInputStream(xzIn)) {
 
             byte[] buffer = new byte[16384];
