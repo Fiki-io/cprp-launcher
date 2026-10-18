@@ -31,6 +31,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -518,32 +519,55 @@ public class MainActivity extends AppCompatActivity {
         }
         appendLog(getString(R.string.log_executing_prefix) + " " + commandStr.toString().trim());
 
+        final AtomicBoolean isRunning = new AtomicBoolean(true);
+        final Runnable logPoller = new Runnable() {
+            @Override
+            public void run() {
+                if (!isRunning.get()) return;
+                String liveLog = NativeBridge.pollLogOutput();
+                if (liveLog != null && !liveLog.isEmpty()) {
+                    appendLog(liveLog.trim());
+                }
+                if (isRunning.get()) {
+                    mainHandler.postDelayed(this, 150);
+                }
+            }
+        };
+        mainHandler.postDelayed(logPoller, 150);
+
         executor.execute(new Runnable() {
             @Override
             public void run() {
                 try {
                     final int exitCode = NativeBridge.startCore(args);
+                    isRunning.set(false);
+                    mainHandler.removeCallbacks(logPoller);
+
                     final String consoleLog = NativeBridge.pollLogOutput();
                     mainHandler.post(new Runnable() {
                         @Override
                         public void run() {
                             tvStatus.setText(getString(R.string.status_finished));
                             tvStatus.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.status_success));
-                            appendLog(getString(R.string.log_exit_code) + " " + exitCode);
                             if (consoleLog != null && !consoleLog.trim().isEmpty()) {
                                 appendLog(consoleLog.trim());
-                            } else {
-                                captureRecentLogcat();
                             }
+                            appendLog(getString(R.string.log_exit_code) + " " + exitCode);
                             setButtonsEnabled(true);
                         }
                     });
                 } catch (final Throwable t) {
+                    isRunning.set(false);
+                    mainHandler.removeCallbacks(logPoller);
+                    final String consoleLog = NativeBridge.pollLogOutput();
                     mainHandler.post(new Runnable() {
                         @Override
                         public void run() {
                             tvStatus.setText(getString(R.string.status_failed));
                             tvStatus.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.status_error));
+                            if (consoleLog != null && !consoleLog.trim().isEmpty()) {
+                                appendLog(consoleLog.trim());
+                            }
                             appendLog("Exception in startCore: " + t.getMessage());
                             setButtonsEnabled(true);
                         }

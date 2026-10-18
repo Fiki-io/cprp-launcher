@@ -16,6 +16,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -230,6 +231,8 @@ public class GameRuntimeManager {
                 wineBin.setExecutable(true, false);
             }
 
+            patchWineBinaries(context);
+
             if (callback != null) {
                 callback.onSuccess("Subsistem Wine WOW64 berhasil dipasang (" + fileCount + " berkas).");
             }
@@ -241,6 +244,83 @@ public class GameRuntimeManager {
         }
     }
 
+    public static void patchFileBinaryString(File file, byte[] oldBytes, byte[] newBytes) {
+        if (file == null || !file.exists() || !file.canWrite()) return;
+        try {
+            byte[] fileData = new byte[(int) file.length()];
+            try (FileInputStream fis = new FileInputStream(file)) {
+                int read = 0;
+                while (read < fileData.length) {
+                    int r = fis.read(fileData, read, fileData.length - read);
+                    if (r == -1) break;
+                    read += r;
+                }
+            }
+            boolean modified = false;
+            int limit = fileData.length - oldBytes.length;
+            for (int i = 0; i <= limit; i++) {
+                boolean match = true;
+                for (int j = 0; j < oldBytes.length; j++) {
+                    if (fileData[i + j] != oldBytes[j]) {
+                        match = false;
+                        break;
+                    }
+                }
+                if (match) {
+                    System.arraycopy(newBytes, 0, fileData, i, newBytes.length);
+                    modified = true;
+                    i += oldBytes.length - 1;
+                }
+            }
+            if (modified) {
+                try (FileOutputStream fos = new FileOutputStream(file)) {
+                    fos.write(fileData);
+                    fos.flush();
+                }
+            }
+        } catch (Exception ignored) {}
+    }
+
+    public static void patchWineBinaries(Context context) {
+        File filesDir = context.getFilesDir();
+        File tmpDir = new File(filesDir, "tmp");
+        if (!tmpDir.exists()) {
+            tmpDir.mkdirs();
+        }
+        tmpDir.setReadable(true, true);
+        tmpDir.setWritable(true, true);
+        tmpDir.setExecutable(true, true);
+
+        File wineserverBin = new File(filesDir, DIR_IMAGEFS + "/opt/wine/bin/wineserver");
+        File ntdllBin = new File(filesDir, DIR_IMAGEFS + "/opt/wine/lib/wine/x86_64-unix/ntdll.so");
+
+        String appTmpWine = filesDir.getAbsolutePath() + "/tmp/.wine-%u";
+        byte[] oldWs = "/data/data/com.winlator/files/rootfs/tmp/.wine-%u\0".getBytes(StandardCharsets.US_ASCII);
+        byte[] newWs = new byte[oldWs.length];
+        byte[] appTmpBytes = (appTmpWine + "\0").getBytes(StandardCharsets.US_ASCII);
+        if (appTmpBytes.length <= oldWs.length) {
+            System.arraycopy(appTmpBytes, 0, newWs, 0, appTmpBytes.length);
+            patchFileBinaryString(wineserverBin, oldWs, newWs);
+        }
+
+        String appTmpServer = filesDir.getAbsolutePath() + "/tmp/.wine-%u/server-%s";
+        byte[] oldNt = "/data/data/com.winlator/files/rootfs/tmp/.wine-%u/server-%s\0".getBytes(StandardCharsets.US_ASCII);
+        byte[] newNt = new byte[oldNt.length];
+        byte[] appNtBytes = (appTmpServer + "\0").getBytes(StandardCharsets.US_ASCII);
+        if (appNtBytes.length <= oldNt.length) {
+            System.arraycopy(appNtBytes, 0, newNt, 0, appNtBytes.length);
+            patchFileBinaryString(ntdllBin, oldNt, newNt);
+        }
+
+        byte[] oldRoot = "/data/data/com.winlator/files/rootfs\0".getBytes(StandardCharsets.US_ASCII);
+        byte[] newRoot = new byte[oldRoot.length];
+        byte[] appFilesBytes = (filesDir.getAbsolutePath() + "\0").getBytes(StandardCharsets.US_ASCII);
+        if (appFilesBytes.length <= oldRoot.length) {
+            System.arraycopy(appFilesBytes, 0, newRoot, 0, appFilesBytes.length);
+            patchFileBinaryString(ntdllBin, oldRoot, newRoot);
+        }
+    }
+
     public static void configureWineEnvironment(Context context, GameConfig config) {
         File filesDir = context.getFilesDir();
         File imageFsDir = new File(filesDir, DIR_IMAGEFS);
@@ -248,16 +328,27 @@ public class GameRuntimeManager {
         if (!winePrefix.exists()) {
             winePrefix.mkdirs();
         }
+        File tmpDir = new File(filesDir, "tmp");
+        if (!tmpDir.exists()) {
+            tmpDir.mkdirs();
+        }
+        tmpDir.setReadable(true, true);
+        tmpDir.setWritable(true, true);
+        tmpDir.setExecutable(true, true);
+
+        patchWineBinaries(context);
 
         try {
             Os.setenv("WINEPREFIX", winePrefix.getAbsolutePath(), true);
-            Os.setenv("WINEDEBUG", "-all", true);
+            Os.setenv("WINEDLLPATH", new File(imageFsDir, "opt/wine/lib/wine").getAbsolutePath(), true);
+            Os.setenv("WINEDATADIR", new File(imageFsDir, "opt/wine/share/wine").getAbsolutePath(), true);
+            Os.setenv("WINESERVER", new File(imageFsDir, "opt/wine/bin/wineserver").getAbsolutePath(), true);
+            Os.setenv("TMPDIR", tmpDir.getAbsolutePath(), true);
+            Os.setenv("WINEDEBUG", "+err", true);
             Os.setenv("BOX64_PATH", new File(imageFsDir, "opt/wine/bin").getAbsolutePath(), true);
-            Os.setenv("BOX64_LD_LIBRARY_PATH",
-                    new File(imageFsDir, "opt/wine/lib/wine/x86_64-unix").getAbsolutePath() + ":" +
-                    new File(imageFsDir, "opt/wine/lib/wine/i386-windows").getAbsolutePath() + ":" +
-                    new File(imageFsDir, "opt/wine/lib/wine/x86_64-windows").getAbsolutePath() + ":" +
-                    new File(imageFsDir, "usr/lib").getAbsolutePath(), true);
+            Os.setenv("BOX64_LD_LIBRARY_PATH", new File(imageFsDir, "opt/wine/lib/wine/x86_64-unix").getAbsolutePath(), true);
+            Os.setenv("BOX64_LOG", "1", true);
+            Os.setenv("BOX64_SHOWSEGV", "1", true);
             Os.setenv("BOX64_MMAP32", "1", true);
             Os.setenv("BOX64_DYNAREC_SAFEFLAGS", "2", true);
         } catch (Exception ignored) {}
