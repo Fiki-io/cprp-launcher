@@ -6,6 +6,8 @@
     <color name="background_terminal">#0E0F12</color>
     <color name="surface_card">#22252B</color>
     <color name="surface_card_border">#333742</color>
+    <color name="input_background">#181A1F</color>
+    <color name="input_border">#2E3440</color>
 
     <color name="text_primary">#ECEFF4</color>
     <color name="text_secondary">#8E95A5</color>
@@ -19,4 +21,5 @@
     <!-- Functional Accent -->
     <color name="accent_primary">#4C566A</color>
     <color name="accent_active">#5E81AC</color>
+    <color name="button_launch">#3B5B7E</color>
 </resources>

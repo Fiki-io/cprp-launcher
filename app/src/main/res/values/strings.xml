@@ -1,10 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">CPRP Runner</string>
-    <string name="title_diagnostics">Diagnostik Core Runner</string>
-    <string name="subtitle_arch">Arsitektur Core: Box86 armeabi-v7a</string>
+    <string name="app_name">CPRP Launcher</string>
     
-    <!-- Status Labels -->
+    <!-- Game Configuration Section -->
+    <string name="title_game_config">Konfigurasi Peluncur CPRP</string>
+    <string name="label_nickname">Nama Karakter</string>
+    <string name="hint_nickname">Nama_Karakter</string>
+    <string name="label_server_ip">Host / IP Server</string>
+    <string name="hint_server_ip">samp.cprp.me</string>
+    <string name="label_server_port">Port</string>
+    <string name="hint_server_port">7777</string>
+    <string name="label_game_dir">Direktori Game GTA SA</string>
+    <string name="hint_game_dir">/sdcard/GTA_SA</string>
+    
+    <!-- Actions -->
+    <string name="btn_install_assets">Pasang Komponen (D8VK &amp; SA-MP)</string>
+    <string name="btn_launch_game">Luncurkan GTA SA (CPRP)</string>
+    <string name="btn_diagnostics_toggle">Menu Diagnostik Core</string>
+
+    <!-- Status & Alerts -->
+    <string name="status_installing_assets">Memasang komponen runtime...</string>
+    <string name="status_assets_installed">Komponen runtime berhasil dipasang ke folder game.</string>
+    <string name="status_verifying_game">Memverifikasi direktori game...</string>
+    <string name="status_game_valid">Direktori game valid.</string>
+    <string name="error_dir_empty">Direktori game tidak boleh kosong.</string>
+    <string name="error_dir_not_found">Direktori game tidak ditemukan di penyimpanan.</string>
+    <string name="error_dir_not_directory">Jalur yang dimasukkan bukan merupakan direktori.</string>
+    <string name="error_dir_no_permission">Izin baca/tulis penyimpanan ditolak sistem.</string>
+    <string name="error_missing_exe">File gta_sa.exe tidak ditemukan di dalam direktori game.</string>
+    <string name="error_nickname_empty">Nama karakter tidak boleh kosong.</string>
+    <string name="error_invalid_port">Port server harus bernilai antara 1 hingga 65535.</string>
+
+    <!-- Diagnostics Section -->
+    <string name="title_diagnostics">Diagnostik Core Runner</string>
+    <string name="subtitle_arch">Arsitektur Core Runtime</string>
     <string name="label_status">Status:</string>
     <string name="status_unloaded">Belum Dimuat</string>
     <string name="status_ready">Core Siap Dijalankan</string>
@@ -12,7 +41,7 @@
     <string name="status_finished">Eksekusi Selesai</string>
     <string name="status_failed">Gagal Memuat Core</string>
 
-    <!-- Button Labels -->
+    <!-- Diagnostic Buttons -->
     <string name="btn_test_version">Uji Versi Core</string>
     <string name="btn_test_flags">Uji Flag Kompilasi</string>
     <string name="btn_test_help">Uji Menu Bantuan</string>

@@ -4,24 +4,24 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/background_primary"
-    android:padding="16dp">
+    android:padding="12dp">
 
     <!-- Header Section -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="@color/surface_card"
-        android:padding="16dp"
-        android:layout_marginBottom="12dp">
+        android:background="@drawable/bg_card"
+        android:padding="12dp"
+        android:layout_marginBottom="8dp">
 
         <TextView
             android:id="@+id/tvTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/title_diagnostics"
+            android:text="@string/app_name"
             android:textColor="@color/text_primary"
-            android:textSize="18sp"
+            android:textSize="17sp"
             android:textStyle="bold" />
 
         <TextView
@@ -30,21 +30,21 @@
             android:layout_height="wrap_content"
             android:text="@string/subtitle_arch"
             android:textColor="@color/text_secondary"
-            android:textSize="13sp"
-            android:layout_marginTop="4dp" />
+            android:textSize="12sp"
+            android:layout_marginTop="2dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="12dp">
+            android:layout_marginTop="6dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/label_status"
                 android:textColor="@color/text_secondary"
-                android:textSize="14sp" />
+                android:textSize="13sp" />
 
             <TextView
                 android:id="@+id/tvStatus"
@@ -53,78 +53,234 @@
                 android:text="@string/status_unloaded"
                 android:textColor="@color/status_warning"
                 android:textStyle="bold"
-                android:textSize="14sp"
+                android:textSize="13sp"
                 android:layout_marginStart="8dp" />
         </LinearLayout>
     </LinearLayout>
 
-    <!-- Operational Controls -->
+    <!-- Game Configuration Card -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/bg_card"
+        android:padding="12dp"
+        android:layout_marginBottom="8dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/title_game_config"
+            android:textColor="@color/text_primary"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Nickname -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_nickname"
+            android:textColor="@color/text_secondary"
+            android:textSize="12sp"
+            android:layout_marginBottom="3dp" />
+
+        <EditText
+            android:id="@+id/etNickname"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/bg_input_field"
+            android:hint="@string/hint_nickname"
+            android:textColor="@color/text_primary"
+            android:textColorHint="@color/text_secondary"
+            android:textSize="13sp"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:inputType="textPersonName"
+            android:singleLine="true"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Server IP & Port -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="8dp">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:orientation="vertical"
+                android:layout_marginEnd="6dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_server_ip"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="12sp"
+                    android:layout_marginBottom="3dp" />
+
+                <EditText
+                    android:id="@+id/etServerIp"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:background="@drawable/bg_input_field"
+                    android:hint="@string/hint_server_ip"
+                    android:textColor="@color/text_primary"
+                    android:textColorHint="@color/text_secondary"
+                    android:textSize="13sp"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:inputType="textUri"
+                    android:singleLine="true" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_marginStart="6dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_server_port"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="12sp"
+                    android:layout_marginBottom="3dp" />
+
+                <EditText
+                    android:id="@+id/etServerPort"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:background="@drawable/bg_input_field"
+                    android:hint="@string/hint_server_port"
+                    android:textColor="@color/text_primary"
+                    android:textColorHint="@color/text_secondary"
+                    android:textSize="13sp"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:inputType="number"
+                    android:singleLine="true" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Game Directory -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_game_dir"
+            android:textColor="@color/text_secondary"
+            android:textSize="12sp"
+            android:layout_marginBottom="3dp" />
+
+        <EditText
+            android:id="@+id/etGameDir"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/bg_input_field"
+            android:hint="@string/hint_game_dir"
+            android:textColor="@color/text_primary"
+            android:textColorHint="@color/text_secondary"
+            android:textSize="13sp"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:inputType="text"
+            android:singleLine="true"
+            android:layout_marginBottom="10dp" />
+
+        <!-- Action Buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnInstallAssets"
+                android:layout_width="0dp"
+                android:layout_height="42dp"
+                android:layout_weight="1"
+                android:text="@string/btn_install_assets"
+                android:textAllCaps="false"
+                android:textSize="12sp"
+                android:backgroundTint="@color/accent_primary"
+                android:textColor="@color/text_primary"
+                android:layout_marginEnd="4dp" />
+
+            <Button
+                android:id="@+id/btnLaunchGame"
+                android:layout_width="0dp"
+                android:layout_height="42dp"
+                android:layout_weight="1"
+                android:text="@string/btn_launch_game"
+                android:textAllCaps="false"
+                android:textSize="12sp"
+                android:backgroundTint="@color/button_launch"
+                android:textColor="@color/text_primary"
+                android:layout_marginStart="4dp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Operational Diagnostics Section -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginBottom="8dp">
+        android:layout_marginBottom="4dp">
 
         <Button
             android:id="@+id/btnTestVersion"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="36dp"
             android:layout_weight="1"
             android:text="@string/btn_test_version"
             android:textAllCaps="false"
-            android:backgroundTint="@color/accent_primary"
-            android:textColor="@color/text_primary"
-            android:layout_marginEnd="4dp" />
+            android:textSize="11sp"
+            android:backgroundTint="@color/surface_card"
+            android:textColor="@color/text_secondary"
+            android:layout_marginEnd="2dp" />
 
         <Button
             android:id="@+id/btnTestFlags"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="36dp"
             android:layout_weight="1"
             android:text="@string/btn_test_flags"
             android:textAllCaps="false"
-            android:backgroundTint="@color/accent_primary"
-            android:textColor="@color/text_primary"
-            android:layout_marginStart="4dp" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginBottom="12dp">
+            android:textSize="11sp"
+            android:backgroundTint="@color/surface_card"
+            android:textColor="@color/text_secondary"
+            android:layout_marginStart="2dp"
+            android:layout_marginEnd="2dp" />
 
         <Button
             android:id="@+id/btnTestHelp"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="36dp"
             android:layout_weight="1"
             android:text="@string/btn_test_help"
             android:textAllCaps="false"
-            android:backgroundTint="@color/accent_primary"
-            android:textColor="@color/text_primary"
-            android:layout_marginEnd="4dp" />
+            android:textSize="11sp"
+            android:backgroundTint="@color/surface_card"
+            android:textColor="@color/text_secondary"
+            android:layout_marginStart="2dp"
+            android:layout_marginEnd="2dp" />
 
         <Button
             android:id="@+id/btnClearLog"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="36dp"
             android:layout_weight="1"
             android:text="@string/btn_clear_log"
             android:textAllCaps="false"
+            android:textSize="11sp"
             android:backgroundTint="@color/surface_card"
             android:textColor="@color/text_secondary"
-            android:layout_marginStart="4dp" />
+            android:layout_marginStart="2dp" />
     </LinearLayout>
-
-    <!-- Terminal Header -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/label_terminal"
-        android:textColor="@color/text_secondary"
-        android:textSize="13sp"
-        android:layout_marginBottom="6dp" />
 
     <!-- Terminal Screen -->
     <ScrollView
@@ -133,7 +289,7 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:background="@color/background_terminal"
-        android:padding="12dp">
+        android:padding="8dp">
 
         <TextView
             android:id="@+id/tvLogOutput"
@@ -141,7 +297,7 @@
             android:layout_height="wrap_content"
             android:textColor="@color/text_terminal"
             android:fontFamily="monospace"
-            android:textSize="12sp"
+            android:textSize="11sp"
             android:text="@string/log_init_prompt" />
     </ScrollView>
 
