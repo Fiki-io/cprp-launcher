@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">CPRP Runner</string>
+    <string name="title_diagnostics">Diagnostik Core Runner</string>
+    <string name="subtitle_arch">Arsitektur Core: Box86 armeabi-v7a</string>
+    
+    <!-- Status Labels -->
+    <string name="label_status">Status:</string>
+    <string name="status_unloaded">Belum Dimuat</string>
+    <string name="status_ready">Core Siap Dijalankan</string>
+    <string name="status_running">Proses Berjalan</string>
+    <string name="status_finished">Eksekusi Selesai</string>
+    <string name="status_failed">Gagal Memuat Core</string>
+
+    <!-- Button Labels -->
+    <string name="btn_test_version">Uji Versi Core</string>
+    <string name="btn_test_flags">Uji Flag Kompilasi</string>
+    <string name="btn_test_help">Uji Menu Bantuan</string>
+    <string name="btn_clear_log">Bersihkan Log</string>
+
+    <!-- Terminal & Log Labels -->
+    <string name="label_terminal">Konsol Output Sistem</string>
+    <string name="log_init_prompt">Siap menerima instruksi eksekusi core.</string>
+    <string name="log_executing_prefix">Mengeksekusi argumen:</string>
+    <string name="log_exit_code">Kode keluar proses:</string>
+    <string name="log_cleared">Log konsol dibersihkan.</string>
+</resources>
