@@ -39,6 +39,12 @@
     <string name="error_nickname_empty">Nama karakter tidak boleh kosong.</string>
     <string name="error_invalid_port">Port server harus bernilai antara 1 hingga 65535.</string>
 
+    <!-- Binary Inspection & Subsystem Status -->
+    <string name="log_binary_inspected">Format biner terdeteksi:</string>
+    <string name="log_windows_pe_detected">Berkas gta_sa.exe terverifikasi sebagai biner Windows PE 32-bit (MZ).</string>
+    <string name="log_wine_subsystem_required">Biner Windows PE memerlukan subsistem pemuat Wine WOW64 untuk menjembatani Win32 API ke kernel Android.</string>
+    <string name="log_wine_subsystem_status">Status pemuat Wine WOW64: Sedang disiapkan ke dalam modul runtime internal.</string>
+
     <!-- Diagnostics Section -->
     <string name="title_diagnostics">Diagnostik Core Runner</string>
     <string name="subtitle_arch">Arsitektur Core Runtime</string>

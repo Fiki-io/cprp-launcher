@@ -390,6 +390,24 @@ public class MainActivity extends AppCompatActivity {
         }
 
         appendLog(getString(R.string.status_game_valid));
+
+        File exeFile = new File(gameDir, GameConfig.EXE_NAME);
+        GameRuntimeManager.BinaryType binaryType = GameRuntimeManager.inspectBinaryType(exeFile);
+        appendLog(getString(R.string.log_binary_inspected) + " " + binaryType);
+
+        if (binaryType == GameRuntimeManager.BinaryType.WINDOWS_PE) {
+            appendLog(getString(R.string.log_windows_pe_detected));
+            appendLog(getString(R.string.log_wine_subsystem_required));
+
+            File internalWine = new File(getFilesDir(), "wine/bin/wine64");
+            if (!internalWine.exists()) {
+                appendLog(getString(R.string.log_wine_subsystem_status));
+                tvStatus.setText(getString(R.string.status_ready));
+                tvStatus.setTextColor(ContextCompat.getColor(this, R.color.status_warning));
+                return;
+            }
+        }
+
         String[] launchArgs = GameRuntimeManager.buildLaunchArguments(gameConfig);
         runCoreCommand(launchArgs);
     }

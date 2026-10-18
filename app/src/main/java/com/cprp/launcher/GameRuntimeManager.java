@@ -65,6 +65,31 @@ public class GameRuntimeManager {
         return VerificationStatus.SUCCESS;
     }
 
+    public enum BinaryType {
+        WINDOWS_PE,
+        LINUX_ELF,
+        UNKNOWN,
+        NOT_FOUND
+    }
+
+    public static BinaryType inspectBinaryType(File file) {
+        if (file == null || !file.exists() || !file.isFile()) {
+            return BinaryType.NOT_FOUND;
+        }
+
+        try (java.io.FileInputStream fis = new java.io.FileInputStream(file)) {
+            byte[] header = new byte[4];
+            int read = fis.read(header);
+            if (read >= 2 && header[0] == 'M' && header[1] == 'Z') {
+                return BinaryType.WINDOWS_PE;
+            } else if (read >= 4 && (header[0] & 0xFF) == 0x7F && header[1] == 'E' && header[2] == 'L' && header[3] == 'F') {
+                return BinaryType.LINUX_ELF;
+            }
+        } catch (java.io.IOException ignored) {}
+
+        return BinaryType.UNKNOWN;
+    }
+
     public static void installRuntimeAssets(Context context, File targetDir, InstallCallback callback) {
         if (targetDir == null || !targetDir.exists()) {
             if (callback != null) {
