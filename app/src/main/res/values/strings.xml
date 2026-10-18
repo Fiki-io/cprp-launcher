@@ -45,6 +45,13 @@
     <string name="log_wine_subsystem_required">Biner Windows PE memerlukan subsistem pemuat Wine WOW64 untuk menjembatani Win32 API ke kernel Android.</string>
     <string name="log_wine_subsystem_status">Status pemuat Wine WOW64: Sedang disiapkan ke dalam modul runtime internal.</string>
 
+    <!-- Wine WOW64 System Image -->
+    <string name="status_installing_system_image">Memasang subsistem runtime Wine WOW64...</string>
+    <string name="status_system_image_installed">Subsistem runtime Wine WOW64 berhasil dipasang.</string>
+    <string name="status_system_image_ready">Subsistem Wine WOW64 aktif dan siap digunakan.</string>
+    <string name="error_system_image_failed">Gagal memasang subsistem Wine WOW64: </string>
+    <string name="log_extracting_system_image">Mengekstrak paket imagefs.txz ke penyimpanan internal...</string>
+
     <!-- Diagnostics Section -->
     <string name="title_diagnostics">Diagnostik Core Runner</string>
     <string name="subtitle_arch">Arsitektur Core Runtime</string>

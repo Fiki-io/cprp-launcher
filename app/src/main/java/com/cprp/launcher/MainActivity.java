@@ -322,7 +322,11 @@ public class MainActivity extends AppCompatActivity {
                                 tvStatus.setText(getString(R.string.status_assets_installed));
                                 tvStatus.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.status_success));
                                 appendLog(getString(R.string.status_assets_installed));
-                                setButtonsEnabled(true);
+                                if (!GameRuntimeManager.isSystemImageInstalled(MainActivity.this)) {
+                                    triggerSystemImageInstallation(null);
+                                } else {
+                                    setButtonsEnabled(true);
+                                }
                             }
                         });
                     }
@@ -342,6 +346,69 @@ public class MainActivity extends AppCompatActivity {
                 });
             }
         });
+    }
+
+    private void triggerSystemImageInstallation(final Runnable onCompleted) {
+        setButtonsEnabled(false);
+        tvStatus.setText(getString(R.string.status_installing_system_image));
+        tvStatus.setTextColor(ContextCompat.getColor(this, R.color.status_warning));
+        appendLog(getString(R.string.log_extracting_system_image));
+
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                GameRuntimeManager.installSystemImage(MainActivity.this, new GameRuntimeManager.InstallCallback() {
+                    @Override
+                    public void onProgress(final String message) {
+                        mainHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                appendLog(message);
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onFileCompleted(String filename, int current, int total) {}
+
+                    @Override
+                    public void onSuccess(final String message) {
+                        mainHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                tvStatus.setText(getString(R.string.status_system_image_installed));
+                                tvStatus.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.status_success));
+                                appendLog(getString(R.string.status_system_image_installed));
+                                setButtonsEnabled(true);
+                                if (onCompleted != null) {
+                                    onCompleted.run();
+                                }
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onError(final String errorMessage) {
+                        mainHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                tvStatus.setText(getString(R.string.status_failed));
+                                tvStatus.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.status_error));
+                                appendLog(getString(R.string.error_system_image_failed) + errorMessage);
+                                setButtonsEnabled(true);
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    }
+
+    private void executeWineGameLaunch() {
+        appendLog(getString(R.string.status_system_image_ready));
+        GameRuntimeManager.configureWineEnvironment(this, gameConfig);
+        String[] wineArgs = GameRuntimeManager.buildWineLaunchArguments(this, gameConfig);
+        runCoreCommand(wineArgs);
     }
 
     private void performGameLaunch() {
@@ -399,11 +466,17 @@ public class MainActivity extends AppCompatActivity {
             appendLog(getString(R.string.log_windows_pe_detected));
             appendLog(getString(R.string.log_wine_subsystem_required));
 
-            File internalWine = new File(getFilesDir(), "wine/bin/wine64");
-            if (!internalWine.exists()) {
-                appendLog(getString(R.string.log_wine_subsystem_status));
-                tvStatus.setText(getString(R.string.status_ready));
-                tvStatus.setTextColor(ContextCompat.getColor(this, R.color.status_warning));
+            if (!GameRuntimeManager.isSystemImageInstalled(this)) {
+                appendLog(getString(R.string.status_installing_system_image));
+                triggerSystemImageInstallation(new Runnable() {
+                    @Override
+                    public void run() {
+                        executeWineGameLaunch();
+                    }
+                });
+                return;
+            } else {
+                executeWineGameLaunch();
                 return;
             }
         }
