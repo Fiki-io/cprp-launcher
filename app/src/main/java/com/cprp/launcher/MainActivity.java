@@ -1,17 +1,26 @@
 package com.cprp.launcher;
 
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Process;
+import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import java.io.BufferedReader;
@@ -25,10 +34,16 @@ import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final int REQUEST_CODE_STORAGE_PERMISSION = 1001;
+
     private TextView tvStatus;
     private TextView tvSubtitle;
     private TextView tvLogOutput;
     private ScrollView scrollLog;
+
+    private LinearLayout layoutPermissionBanner;
+    private TextView tvPermissionStatus;
+    private Button btnRequestPermission;
 
     private EditText etNickname;
     private EditText etServerIp;
@@ -59,6 +74,13 @@ public class MainActivity extends AppCompatActivity {
         setupConfigWatchers();
         setupListeners();
         checkCoreStatus();
+        updateStoragePermissionUi();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateStoragePermissionUi();
     }
 
     private void initViews() {
@@ -66,6 +88,10 @@ public class MainActivity extends AppCompatActivity {
         tvSubtitle = findViewById(R.id.tvSubtitle);
         tvLogOutput = findViewById(R.id.tvLogOutput);
         scrollLog = findViewById(R.id.scrollLog);
+
+        layoutPermissionBanner = findViewById(R.id.layoutPermissionBanner);
+        tvPermissionStatus = findViewById(R.id.tvPermissionStatus);
+        btnRequestPermission = findViewById(R.id.btnRequestPermission);
 
         etNickname = findViewById(R.id.etNickname);
         etServerIp = findViewById(R.id.etServerIp);
@@ -130,6 +156,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupListeners() {
+        btnRequestPermission.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                requestStoragePermission();
+            }
+        });
+
         btnInstallAssets.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -173,8 +206,70 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    public boolean hasStoragePermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            return Environment.isExternalStorageManager();
+        } else {
+            return ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+        }
+    }
+
+    public void requestStoragePermission() {
+        appendLog(getString(R.string.log_request_permission));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            try {
+                Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+                intent.setData(Uri.parse("package:" + getPackageName()));
+                startActivity(intent);
+            } catch (Exception e) {
+                try {
+                    Intent fallbackIntent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+                    startActivity(fallbackIntent);
+                } catch (Exception ex) {
+                    appendLog("Error launching permission settings: " + ex.getMessage());
+                }
+            }
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    REQUEST_CODE_STORAGE_PERMISSION);
+        }
+    }
+
+    private void updateStoragePermissionUi() {
+        if (hasStoragePermission()) {
+            tvPermissionStatus.setText(getString(R.string.permission_granted));
+            tvPermissionStatus.setTextColor(ContextCompat.getColor(this, R.color.status_success));
+            btnRequestPermission.setVisibility(View.GONE);
+        } else {
+            tvPermissionStatus.setText(getString(R.string.permission_denied));
+            tvPermissionStatus.setTextColor(ContextCompat.getColor(this, R.color.status_warning));
+            btnRequestPermission.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_CODE_STORAGE_PERMISSION) {
+            updateStoragePermissionUi();
+            if (hasStoragePermission()) {
+                appendLog(getString(R.string.permission_granted));
+            } else {
+                appendLog(getString(R.string.error_storage_permission_required));
+            }
+        }
+    }
+
     private void performAssetInstallation() {
         saveCurrentConfig();
+
+        if (!hasStoragePermission()) {
+            appendLog(getString(R.string.error_storage_permission_required));
+            requestStoragePermission();
+            return;
+        }
+
         final String gameDirPath = gameConfig.getGameDir();
         if (gameDirPath.isEmpty()) {
             appendLog(getString(R.string.error_dir_empty));
@@ -251,6 +346,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void performGameLaunch() {
         saveCurrentConfig();
+
+        if (!hasStoragePermission()) {
+            appendLog(getString(R.string.error_storage_permission_required));
+            requestStoragePermission();
+            return;
+        }
 
         String nickname = gameConfig.getNickname();
         if (nickname.isEmpty()) {

@@ -18,6 +18,14 @@
     <string name="btn_launch_game">Luncurkan GTA SA (CPRP)</string>
     <string name="btn_diagnostics_toggle">Menu Diagnostik Core</string>
 
+    <!-- Storage Permission -->
+    <string name="label_permission_storage">Izin Akses Penyimpanan (All Files Access):</string>
+    <string name="permission_granted">Izin Diberikan</string>
+    <string name="permission_denied">Izin Belum Diberikan</string>
+    <string name="btn_request_permission">Buka Pengaturan Izin</string>
+    <string name="log_request_permission">Membuka layar pengaturan izin akses semua file...</string>
+    <string name="error_storage_permission_required">Izin akses semua file wajib diaktifkan agar aplikasi dapat membaca dan menulis berkas game.</string>
+
     <!-- Status & Alerts -->
     <string name="status_installing_assets">Memasang komponen runtime...</string>
     <string name="status_assets_installed">Komponen runtime berhasil dipasang ke folder game.</string>
