@@ -45,4 +45,5 @@ public final class NativeBridge {
 
     public static native int startCore(String[] args);
     public static native int startCore64(String[] args);
+    public static native String pollLogOutput();
 }

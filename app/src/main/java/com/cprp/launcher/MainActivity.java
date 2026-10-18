@@ -122,13 +122,18 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 try {
                     final int exitCode = NativeBridge.startCore(args);
+                    final String consoleLog = NativeBridge.pollLogOutput();
                     mainHandler.post(new Runnable() {
                         @Override
                         public void run() {
                             tvStatus.setText(getString(R.string.status_finished));
                             tvStatus.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.status_success));
                             appendLog(getString(R.string.log_exit_code) + " " + exitCode);
-                            captureRecentLogcat();
+                            if (consoleLog != null && !consoleLog.trim().isEmpty()) {
+                                appendLog(consoleLog.trim());
+                            } else {
+                                captureRecentLogcat();
+                            }
                             setButtonsEnabled(true);
                         }
                     });
@@ -152,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 try {
-                    Process process = Runtime.getRuntime().exec("logcat -d -v time -s CPRP_CORE:V BOX86:V");
+                    Process process = Runtime.getRuntime().exec("logcat -d -v time -s CPRP_CORE:V CPRP_CORE64:V BOX86:V BOX64:V");
                     BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
                     final StringBuilder logcatOutput = new StringBuilder();
                     String line;
