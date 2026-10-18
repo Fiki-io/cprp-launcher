@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
         if (NativeBridge.isLoaded()) {
             tvStatus.setText(getString(R.string.status_ready));
             tvStatus.setTextColor(ContextCompat.getColor(this, R.color.status_success));
-            appendLog(getString(R.string.status_ready) + " [libbox86.so ABI: armeabi-v7a]");
+            appendLog(getString(R.string.status_ready) + " [" + NativeBridge.getLoadedCore() + "]");
         } else {
             tvStatus.setText(getString(R.string.status_failed));
             tvStatus.setTextColor(ContextCompat.getColor(this, R.color.status_error));
@@ -101,6 +101,10 @@ public class MainActivity extends AppCompatActivity {
         if (!NativeBridge.isLoaded()) {
             appendLog(getString(R.string.status_failed));
             return;
+        }
+
+        if (android.os.Process.is64Bit() && args.length > 0 && "box86".equals(args[0])) {
+            args[0] = "box64";
         }
 
         setButtonsEnabled(false);
